@@ -167,12 +167,17 @@
     {
         "name": "cache",
         "type": "class",
-        "value": "App\\Classes\\RedisCache"
+        "value": "SVApp\\Classes\\RedisCache"
+    },
+    {
+        "name": "apcu_cache",
+        "type": "class",
+        "value": "Doctrine\\Common\\Cache\\ApcuCache"
     },
     {
         "name": "var_dir",
         "type": "string",
-        "value": "C:\\OpenServer\\domains\\svassets\\src\\App\/..\/..\/\/var"
+        "value": "C:\\OpenServer\\domains\\svassets\\src\\SVApp\/..\/..\/\/var"
     },
     {
         "name": "locale",
@@ -182,7 +187,7 @@
     {
         "name": "http_cache.cache_dir",
         "type": "string",
-        "value": "C:\\OpenServer\\domains\\svassets\\src\\App\/..\/..\/\/var\/cache\/http"
+        "value": "C:\\OpenServer\\domains\\svassets\\src\\SVApp\/..\/..\/\/var\/cache\/http"
     },
     {
         "name": "monolog.options",
@@ -395,7 +400,7 @@
     {
         "name": "session.storage.handler",
         "type": "class",
-        "value": "Symfony\\Component\\HttpFoundation\\Session\\Storage\\Handler\\NativeFileSessionHandler"
+        "value": "Symfony\\Component\\HttpFoundation\\Session\\Storage\\Handler\\RedisSessionHandler"
     },
     {
         "name": "session.storage.native",
@@ -736,8 +741,8 @@
     },
     {
         "name": "user",
-        "type": "null",
-        "value": ""
+        "type": "class",
+        "value": "Symfony\\Component\\Security\\Core\\User\\User"
     },
     {
         "name": "security.authentication_manager",
@@ -1072,7 +1077,7 @@
     {
         "name": "monolog.logfile",
         "type": "string",
-        "value": "C:\\OpenServer\\domains\\svassets\\src\\App\/..\/..\/\/var\/logs\/app.log"
+        "value": "C:\\OpenServer\\domains\\svassets\\src\\SVApp\/..\/..\/\/var\/logs\/app.log"
     },
     {
         "name": "monolog.use_error_handler",
@@ -1252,7 +1257,7 @@
     {
         "name": "profiler.cache_dir",
         "type": "string",
-        "value": "C:\\OpenServer\\domains\\svassets\\src\\App\/..\/..\/\/var\/cache\/profiler"
+        "value": "C:\\OpenServer\\domains\\svassets\\src\\SVApp\/..\/..\/\/var\/cache\/profiler"
     },
     {
         "name": "security.user_provider.admin",

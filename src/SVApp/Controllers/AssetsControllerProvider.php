@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Controllers;
+namespace SVApp\Controllers;
 
-use App\Entities\Asset;
-use App\Entities\Portfolio;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ApcuCache;
+use SVApp\Entities\Asset;
+use SVApp\Entities\Portfolio;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application as App;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -44,56 +42,15 @@ class AssetsControllerProvider implements ControllerProviderInterface
 
 	public function showPortfolio()
 	{
-		$em = $this->app['orm.em'];
-
-		//We get the cache before anything else
-		$cacheDriver = new ApcuCache();
-
-		if ($cacheDriver->contains('_home_rssNews'))
-		{
-			return $cacheDriver->fetch('_home_rssNews');
-		}
-
-		//If not, we build the Response as usual and then put it in cache !
-
-		$redis = $this->app['redis'];
-
-		if ($this->app['cache']->contains('test')) {
-			echo 'cache exists';
-			echo "\n" . '<br>' . $this->app['cache']->fetch('test') . ' - this->app<br>' . "\n";
-		} else {
-			echo 'cache does not exist';
-//			$redis->set('test', json_encode(['1', '2', '3']));
-//			$this->app['cache']->save('test', json_encode(['1', '2', '3']));
-
-			$this->app['cache']->save('test', ['3', '4', '4']);
-
-		}
-
-//		$redis->set('test', json_encode(['1', '2', '3']));
-		$redisVal = $this->app['cache']->fetch('test');
-		
-		d ( $redisVal );
-
-		echo "\n" . '<br>' . $redisVal . ' - redisVal<br>' . "\n";
-
 		/**
 		 * @var Portfolio[] $portfolios
 		 */
-		$portfolios = $em->getRepository('App\Entities\Portfolio')->findAll();
 
-		$allPortfolios = [ ];
-		foreach ($portfolios AS $portfolio) {
-
-			$allPortfolios[] = [ 'name'   => $portfolio->getName(),
-								 'assets' => $portfolio->getAssets() ];
-		}
+		$portfolios = (new \SVApp\Repositories\Portfolio($this->app))->getAllPortfolios();
 
 		$response = $this->app['twig']->render('portfolio.html.twig', array(
-			'allPortfolios' => $allPortfolios,
+			'allPortfolios' => $portfolios,
 		));
-
-		$cacheDriver->save('_home_rssNews', $response, "900");
 
 		return $response;
 	}
@@ -101,7 +58,7 @@ class AssetsControllerProvider implements ControllerProviderInterface
 	public function assets(App $app)
 	{
 		$em = $app['orm.em'];
-		$assetsEntities = $em->getRepository('App\Entities\Asset')->findAll();
+		$assetsEntities = $em->getRepository('SVApp\Entities\Asset')->findAll();
 
 		$assets = [];
 		$i=0;

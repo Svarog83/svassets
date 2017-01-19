@@ -1,9 +1,9 @@
 <?php
-namespace App\Entities;
-use App\Classes\Entity;
+namespace SVApp\Entities;
+use SVApp\Classes\Entity;
 
 /**
- * OMS\Entities\Asset
+ * SVApp\Entities\Asset
  *
  * @Entity
  * @Table(name="assets")
@@ -38,8 +38,8 @@ class Asset extends Entity {
 	protected $Strategy;
 
 	/**
-	 * @ManyToOne(targetEntity="Portfolio", inversedBy="Assets", cascade={"persist"})
-	 * @JoinColumn(name="portfolioID", referencedColumnName="pID")
+	 * @ManyToOne(targetEntity="Portfolio", inversedBy="Assets")
+	 * @JoinColumn(name="portfolioID", referencedColumnName="pID", onDelete="CASCADE")
 	 * options={"comment" = "Portfolio ID"})
 	 */
 	protected $Portfolio;

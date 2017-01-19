@@ -12,9 +12,9 @@ $app['orm.proxies_dir'] = './var/cache/doctrine/proxies/';
 
 $app['orm.em.options'] = [ "mappings" => [ // Using actual filesystem paths
 										   [ "type"      => "annotation",
-											 "namespace" => "App\\Entities",
-											 //			"path" => __DIR__."../../src/App/Entities",
-											 "path"      => "./src/App/Entities", ], ], ];
+											 "namespace" => "SVApp\\Entities",
+											 //			"path" => __DIR__."../../src/SVApp/Entities",
+											 "path"      => "./src/SVApp/Entities", ], ], ];
 
 /*$app['db.options'] = array(
     'driver' => 'pdo_sqlite',

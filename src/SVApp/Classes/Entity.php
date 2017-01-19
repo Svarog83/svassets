@@ -1,5 +1,5 @@
 <?php
-namespace App\Classes;
+namespace SVApp\Classes;
 
 abstract class Entity {
 	/* @var $application \Silex\Application*/

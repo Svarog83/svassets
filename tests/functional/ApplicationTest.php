@@ -1,6 +1,6 @@
 <?php
 
-use App\Application;
+use SVApp\Application;
 use Silex\WebTestCase;
 
 class ApplicationTest extends WebTestCase

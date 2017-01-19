@@ -1,11 +1,11 @@
 <?php
-namespace App\Entities;
+namespace SVApp\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Classes\Entity;
+use SVApp\Classes\Entity;
 
 /**
- * OMS\Entities\Portfolio
+ * SVApp\Entities\Portfolio
  *
  * @Entity
  * @Table(name="portfolio")
@@ -20,9 +20,11 @@ class Portfolio extends Entity{
 	/** @Column(type="string", name="description", length=255) */
 	protected $Description;
 
+	/** @Column(type="string", name="description2", length=255) */
+	protected $Description2;
+
 	/**
 	 * @OneToMany(targetEntity="Asset", mappedBy="Portfolio", cascade={"persist"})
-	 * @OrderBy({"Ticker" = "ASC"})
 	 **/
 	protected $Assets;
 

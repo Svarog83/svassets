@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace SVApp;
 
-use App\Entities\Asset;
+use SVApp\Entities\Asset;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application as App;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -85,7 +85,7 @@ class ControllerProvider implements ControllerProviderInterface
     {
 //        $posts = $app['db']->fetchAll('SELECT * FROM post');
 		$em = $app['orm.em'];
-		$assetsEntities = $em->getRepository('App\Entities\Asset')->findAll();
+		$assetsEntities = $em->getRepository('SVApp\Entities\Asset')->findAll();
 
 		$assets = [];
 		foreach ($assetsEntities AS $oneAsset) {
@@ -210,7 +210,7 @@ class ControllerProvider implements ControllerProviderInterface
 
     public function error(\Exception $e, Request $request, $code)
     {
-        if ($this->app['debug']) {
+        if (1 || $this->app['debug']) {
             echo "\n" . '<br>' . $code . ' - code<br>' . "\n";
 			echo "\n" . '<br>' . $e->getMessage() . ' - e->getMessage()<br>' . "\n";
 			

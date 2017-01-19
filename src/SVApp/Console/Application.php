@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console;
+namespace SVApp\Console;
 
-use App\Application as App;
+use SVApp\Application as App;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -174,6 +174,8 @@ EOT
 			->setCode(function (InputInterface $input, OutputInterface $output) {
 				$app = $this->silexApp;
 
+				$output->writeln( 'Entities cache flushed. '.$app['cache']->flushCurrent('').' item(s) deleted.' );
+
 				$output->writeln( 'Updating database structure' );
 
 				/** @var \Doctrine\ORM\EntityManager $em */
@@ -189,8 +191,6 @@ EOT
 
 				$classes = $em->getMetadataFactory()->getAllMetadata();
 				$destPath = $em->getConfiguration()->getProxyDir();
-
-				echo "\n" . '<br>' . $destPath . ' - $destPath<br>' . "\n";
 
 				if ( ! is_dir($destPath)) {
 					mkdir($destPath, 0777, true);

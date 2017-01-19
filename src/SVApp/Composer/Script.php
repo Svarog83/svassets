@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Composer;
+namespace SVApp\Composer;
 
 class Script
 {

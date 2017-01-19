@@ -13,6 +13,6 @@ if ('dev' === $env) {
     Debug::enable();
 }
 
-$app = new App\Application($env);
-$console = new App\Console\Application($app);
+$app = new SVApp\Application($env);
+$console = new SVApp\Console\Application($app);
 $console->run();

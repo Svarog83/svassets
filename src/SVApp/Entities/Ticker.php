@@ -1,8 +1,8 @@
 <?php
-namespace App\Entities;
+namespace SVApp\Entities;
 
 /**
- * OMS\Entities\Ticker
+ * SVApp\Entities\Ticker
  *
  * @Entity
  * @Table(name="tickers")

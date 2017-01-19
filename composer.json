@@ -1,14 +1,14 @@
 {
-    "name"        : "lyrixx/silex-kitchen-edition",
-    "type"        : "library",
-    "description" : "A Silex Edition. This project is a base for your silex applications.",
+    "name"        : "svaroggg/svassets",
+    "type"        : "project",
+    "description" : "My project on Silex",
     "keywords"    : ["framework"],
-    "homepage"    : "http://lyrixx.github.com/Silex-Kitchen-Edition/",
+    "homepage"    : "https://github.com/Svarog83/svassets",
     "license"     : "MIT",
     "authors"     : [
         {
-            "name"  : "Grégoire Pineau",
-            "email" : "lyrixx@lyrixx.info"
+            "name"  : "Sergey Vetko",
+            "email" : "svaroggg@gmail.com"
         }
     ],
     "require": {
@@ -48,8 +48,8 @@
         "symfony/dom-crawler"   : "^3.1"
     },
     "scripts": {
-        "post-install-cmd": "App\\Composer\\Script::install",
-        "post-update-cmd": "App\\Composer\\Script::install",
+        "post-install-cmd": "SVApp\\Composer\\Script::install",
+        "post-update-cmd": "SVApp\\Composer\\Script::install",
         "compile": [
             "cp resources/config/heroku.php resources/config/prod.php",
             "npm install"
@@ -57,7 +57,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/App"
+            "SVApp\\": "src/SVApp"
         }
     }
 }

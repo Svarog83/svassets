@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes;
+namespace SVApp\Classes;
 
 class RedisCache extends \Doctrine\Common\Cache\RedisCache {
 	public function get($key, \Closure $fallback = null, $expiration = null) {
@@ -16,10 +16,17 @@ class RedisCache extends \Doctrine\Common\Cache\RedisCache {
 		return $result;
 	}
 
-	public function flushCurrent() {
-		$pattern = "*";
+	/**
+	 * Clears Redis cache by pattern (or everything if empty)
+	 *
+	 * @param string $pattern
+	 * @return int
+	 */
+	public function flushCurrent($pattern = '') {
+		$fullPattern = "*" . $pattern;
+
 		$c=0;
-		$cr = $this->getRedis()->keys($pattern);
+		$cr = $this->getRedis()->keys($fullPattern);
 		foreach ($cr as $oneKey) {
 			list(, $key) = explode (':', $oneKey);
 

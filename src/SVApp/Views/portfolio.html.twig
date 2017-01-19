@@ -6,9 +6,9 @@
 	<h1>{{ 'Portfolio'|trans }}</h1>
 	<ul>
 		{% for portfolio in allPortfolios %}
-			<li>{{ portfolio.name }}</li>
+			<li>{{ portfolio.Name }}</li>
 			<ul>
-				{% for asset in portfolio.assets %}
+				{% for asset in portfolio.Assets %}
 					<li>{{ asset.aID }}. {{ asset.Ticker.Code }}</li>
 				{% endfor %}
 			</ul>

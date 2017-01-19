@@ -1,13 +1,12 @@
 <?php
 
-namespace App;
+namespace SVApp;
 
-use App\Classes\MyRedisProvider;
-use App\Classes\RedisCache;
-use App\Controllers\AssetsControllerProvider;
+use SVApp\Classes\MyRedisProvider;
+use SVApp\Classes\RedisCache;
+use SVApp\Controllers\AssetsControllerProvider;
 use Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
-use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
-use Predis\Silex\ClientServiceProvider;
+use Doctrine\Common\Cache\ApcuCache;
 use Silex\Application as SilexApplication;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\FormServiceProvider;
@@ -22,6 +21,7 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
 use Sorien\Provider\PimpleDumpProvider;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
@@ -77,9 +77,11 @@ class Application extends SilexApplication
 			return $cacheDriver;
 		};
 
+		$app['apcu_cache'] = function () use ($app) {
+			$cacheDriver = new ApcuCache();
 
-
-
+			return $cacheDriver;
+		};
 
 		// Override these values in resources/config/prod.php file
         $app['debug'] = false;
@@ -93,7 +95,7 @@ class Application extends SilexApplication
             'monolog.name' => 'app',
             'monolog.level' => 300, // = Logger::WARNING
         ];
-        $app['security.users'] = array('alice' => array('ROLE_USER', 'password'));
+        $app['security.users'] = array('alice' => array('ROLE_USER', 'dtnjrhtc'));
 
         $configFile = sprintf('%s/resources/config/%s.php', $this->rootDir, $env);
         if (!file_exists($configFile)) {
@@ -110,6 +112,12 @@ class Application extends SilexApplication
         $app->register(new ValidatorServiceProvider());
 		$app->register(new PimpleDumpProvider()); //enable it to refresh the pimple.json file (to refresh call _dump)
 		$app->register(new DoctrineOrmServiceProvider());
+
+		$app['session.storage.handler'] = function ($app) {
+			$sessionTimeout = 60 * 60 * 24 * 7; // 1 week
+			$sessionOptions = [ 'key_prefix' => 'ses:'];
+			return new RedisSessionHandler($app['redis'], $sessionTimeout, $sessionOptions);
+		};
 
 		$app['orm.em.config']->setQueryCacheImpl( $app['cache'] );
 		$app['orm.em.config']->setResultCacheImpl( $app['cache'] );
@@ -136,7 +144,8 @@ class Application extends SilexApplication
         };
 
         $app->register(new TranslationServiceProvider());
-        $app['translator'] = $app->extend('translator', function ($translator) {
+        $app['translator'] = $app->extend(
+			'translator', function ($translator) {
             $translator->addLoader('yaml', new YamlFileLoader());
 			$translator->addResource('yaml', $this->rootDir.'/resources/translations/en.yml', 'en');
 			$translator->addResource('yaml', $this->rootDir.'/resources/translations/ru.yml', 'ru');
@@ -148,11 +157,12 @@ class Application extends SilexApplication
 
         $app->register(new TwigServiceProvider(), array(
             'twig.options' => array(
-                'cache' => $app['var_dir'].'/cache/twig',
+                'cache' =>  $app['var_dir'].'/cache/twig',
+				'auto_reload' => true,
                 'strict_variables' => true,
             ),
             'twig.form.templates' => array('bootstrap_3_horizontal_layout.html.twig'),
-            'twig.path' => array($this->rootDir.'/resources/templates', $this->rootDir.'/src/App/Views'),
+            'twig.path' => array($this->rootDir.'/resources/templates', $this->rootDir.'/src/SVApp/Views'),
         ));
         $app['twig'] = $app->extend('twig', function ($twig, $app) {
             $twig->addFunction(new \Twig_SimpleFunction('asset', function ($asset) use ($app) {
@@ -164,7 +174,7 @@ class Application extends SilexApplication
             return $twig;
         });
 
-        if ('dev' === $this->env) {
+        if ($app['debug']) {
             $app->register(new WebProfilerServiceProvider(), array(
                 'profiler.cache_dir' => $app['var_dir'].'/cache/profiler',
                 'profiler.mount_prefix' => '/_profiler', // this is the default
