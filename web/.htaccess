@@ -2,6 +2,11 @@
     Options -MultiViews
 
     RewriteEngine On
+	#RewriteRule 1.txt /node_modules/bootstrap/dist/js/3.txt [L]
+	#RewriteRule vendor/bootstrap/js/bootstrap.min.js /node_modules/bootstrap/dist/js/bootstrap.min.js [L]
+	RewriteRule ^vendor/bootstrap/js/(.*) /node_modules/bootstrap/dist/js/$1 [L]
+	RewriteRule ^vendor/bootstrap/fonts/(.*) /node_modules/bootstrap/dist/fonts/$1 [L]
+	RewriteRule ^vendor/bootstrap/css/(.*) /node_modules/bootstrap/dist/css/$1 [L]
     #RewriteBase /path/to/app
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]

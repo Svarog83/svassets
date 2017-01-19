@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Application as App;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -166,5 +167,66 @@ EOT
                     $this->silexApp['db']->insert('post', ['title' => 'hello #'.rand()]);
                 }
             });
+
+		$this
+			->register('db:update')
+			->setDescription('Update DB entities')
+			->setCode(function (InputInterface $input, OutputInterface $output) {
+				$app = $this->silexApp;
+
+				$output->writeln( 'Updating database structure' );
+
+				/** @var \Doctrine\ORM\EntityManager $em */
+				$em = $app['orm.em'];
+				$platform = $em->getConnection()->getDatabasePlatform();
+				$platform->registerDoctrineTypeMapping('enum', 'string');
+				$classes = $em->getMetadataFactory()->getAllMetadata();
+
+				$schemaTool = new SchemaTool($app['orm.em']);
+				$schemaTool->updateSchema($classes);
+				$output->writeln( sprintf( "%s <info>success</info>", 'DB updateSchema' ) );
+
+
+				$classes = $em->getMetadataFactory()->getAllMetadata();
+				$destPath = $em->getConfiguration()->getProxyDir();
+
+				echo "\n" . '<br>' . $destPath . ' - $destPath<br>' . "\n";
+
+				if ( ! is_dir($destPath)) {
+					mkdir($destPath, 0777, true);
+				}
+
+				$destPath = realpath($destPath);
+
+				if ( ! file_exists($destPath)) {
+					throw new \InvalidArgumentException(
+						sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $em->getConfiguration()->getProxyDir())
+					);
+				}
+
+				if ( ! is_writable($destPath)) {
+					throw new \InvalidArgumentException(
+						sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
+					);
+				}
+
+				if ( count($classes)) {
+					foreach ($classes as $metadata) {
+						$output->writeln( sprintf('Processing entity "<info>%s</info>"', $metadata->name) );
+					}
+
+					// Generating Proxies
+					$em->getProxyFactory()->generateProxyClasses($classes, $destPath);
+
+					// Outputting information message
+					$output->writeln( sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath) );
+				} else {
+					$output->writeln( 'No Metadata Classes to process.' );
+				}
+
+				$output->writeln( sprintf( "%s <info>success</info>", 'db:update' ) );
+
+				$output->writeln('all done');
+			});
     }
 }

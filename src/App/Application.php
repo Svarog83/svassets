@@ -2,6 +2,12 @@
 
 namespace App;
 
+use App\Classes\MyRedisProvider;
+use App\Classes\RedisCache;
+use App\Controllers\AssetsControllerProvider;
+use Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
+use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
+use Predis\Silex\ClientServiceProvider;
 use Silex\Application as SilexApplication;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\FormServiceProvider;
@@ -15,6 +21,7 @@ use Silex\Provider\TranslationServiceProvider;
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
+use Sorien\Provider\PimpleDumpProvider;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
@@ -24,7 +31,12 @@ class Application extends SilexApplication
     private $rootDir;
     private $env;
 
-    public function __construct($env)
+	/**
+	 * Application constructor.
+	 *
+	 * @param array $env
+	 */
+	public function __construct($env)
     {
         $this->rootDir = __DIR__.'/../../';
         $this->env = $env;
@@ -33,9 +45,46 @@ class Application extends SilexApplication
 
         $app = $this;
 
-        // Override these values in resources/config/prod.php file
-        $app['var_dir'] = $this->rootDir.'/var';
-        $app['locale'] = 'fr';
+
+		//My settings
+		$app['default_timezone'] = 'UTC';
+		$app['orm.default_timezone'] = 'UTC';
+		date_default_timezone_set('UTC');
+
+		$app['redis.serializer.igbinary'] = false;
+		$app['redis.timeout'] = 60*60;
+		$app['redis.prefix'] = 'AssetsSV:';
+
+		/*$app->register(new ClientServiceProvider(), [
+			'predis.parameters' => 'tcp://127.0.0.1:6379',
+			'predis.options'    => [
+				'prefix'  => 'assetsSV:',
+				'profile' => '3.0',
+			],
+		]);*/
+
+		$app->register(new MyRedisProvider(), [
+			'redis.host' => '127.0.0.1',
+			'redis.port' => 6379,
+			'redis.prefix' => $app['redis.prefix'],
+			'redis.database' => '0'
+		]);
+
+		$app['cache'] = function () use ($app) {
+			$cacheDriver = new RedisCache();
+			$cacheDriver->setRedis($app['redis']);
+
+			return $cacheDriver;
+		};
+
+
+
+
+
+		// Override these values in resources/config/prod.php file
+        $app['debug'] = false;
+		$app['var_dir'] = $this->rootDir.'/var';
+        $app['locale'] = 'ru';
         $app['http_cache.cache_dir'] = function (Application $app) {
             return $app['var_dir'].'/cache/http';
         };
@@ -59,6 +108,12 @@ class Application extends SilexApplication
         $app->register(new ServiceControllerServiceProvider());
         $app->register(new SessionServiceProvider());
         $app->register(new ValidatorServiceProvider());
+		$app->register(new PimpleDumpProvider()); //enable it to refresh the pimple.json file (to refresh call _dump)
+		$app->register(new DoctrineOrmServiceProvider());
+
+		$app['orm.em.config']->setQueryCacheImpl( $app['cache'] );
+		$app['orm.em.config']->setResultCacheImpl( $app['cache'] );
+		$app['orm.em.config']->setMetadataCacheImpl( $app['cache'] );
 
         $app->register(new SecurityServiceProvider(), array(
             'security.firewalls' => array(
@@ -73,7 +128,7 @@ class Application extends SilexApplication
                 ),
             ),
         ));
-        $app['security.default_encoder'] = function ($app) {
+        $app['security.default_encoder'] = function () {
             return new PlaintextPasswordEncoder();
         };
         $app['security.utils'] = function ($app) {
@@ -81,9 +136,10 @@ class Application extends SilexApplication
         };
 
         $app->register(new TranslationServiceProvider());
-        $app['translator'] = $app->extend('translator', function ($translator, $app) {
+        $app['translator'] = $app->extend('translator', function ($translator) {
             $translator->addLoader('yaml', new YamlFileLoader());
-            $translator->addResource('yaml', $this->rootDir.'/resources/translations/fr.yml', 'fr');
+			$translator->addResource('yaml', $this->rootDir.'/resources/translations/en.yml', 'en');
+			$translator->addResource('yaml', $this->rootDir.'/resources/translations/ru.yml', 'ru');
 
             return $translator;
         });
@@ -96,7 +152,7 @@ class Application extends SilexApplication
                 'strict_variables' => true,
             ),
             'twig.form.templates' => array('bootstrap_3_horizontal_layout.html.twig'),
-            'twig.path' => array($this->rootDir.'/resources/templates'),
+            'twig.path' => array($this->rootDir.'/resources/templates', $this->rootDir.'/src/App/Views'),
         ));
         $app['twig'] = $app->extend('twig', function ($twig, $app) {
             $twig->addFunction(new \Twig_SimpleFunction('asset', function ($asset) use ($app) {
@@ -116,6 +172,7 @@ class Application extends SilexApplication
         }
 
         $app->mount('', new ControllerProvider());
+		$app->mount('/assets/', new AssetsControllerProvider());
     }
 
     public function getRootDir()

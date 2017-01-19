@@ -1,0 +1,14 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'assets' %}
+
+{% block content %}
+
+	<h1>{{ 'Assets'|trans }}</h1>
+
+	<ul>
+		{% for asset in assets %}
+			<li>{{ asset.aID }}. {{ asset.TickerCode }}</li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

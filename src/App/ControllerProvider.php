@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Entities\Asset;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application as App;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -42,8 +43,25 @@ class ControllerProvider implements ControllerProviderInterface
             ->get('/cache', [$this, 'cache'])
             ->bind('cache');
 
+		$controllers
+			->get('/test', [$this, 'test'])
+			->bind('test');
+
+		$controllers->get('/mc_flush', function () use ($app) {
+			if ($app['cache']) {
+				return 'Cache flushed. '.$app['cache']->flushCurrent().' item(s) deleted.';
+			} else
+				return 'Memcache flush disabled for non-debug mode!';
+		});
+
+
         return $controllers;
     }
+
+	public function test(App $app)
+	{
+		return   'Hello '.$app->escape('sss');
+	}
 
     public function homepage(App $app)
     {
@@ -65,8 +83,29 @@ class ControllerProvider implements ControllerProviderInterface
 
     public function doctrine(App $app)
     {
-        return $app['twig']->render('doctrine.html.twig', array(
-            'posts' => $app['db']->fetchAll('SELECT * FROM post'),
+//        $posts = $app['db']->fetchAll('SELECT * FROM post');
+		$em = $app['orm.em'];
+		$assetsEntities = $em->getRepository('App\Entities\Asset')->findAll();
+
+		$assets = [];
+		foreach ($assetsEntities AS $oneAsset) {
+			/**
+			 * @var Asset $oneAsset
+			 */
+
+			$assets[] = $oneAsset->getArray();
+		}
+
+		/*if ( count($assets) < 9) {
+			$asset = new Asset();
+			$asset->setName(sha1(rand()));
+			$em->persist($asset);
+			$em->flush();
+			$assets[] = $asset->getArray();
+		}*/
+
+		return $app['twig']->render('doctrine.html.twig', array(
+            'assets' => $assets,
         ));
     }
 
@@ -172,8 +211,15 @@ class ControllerProvider implements ControllerProviderInterface
     public function error(\Exception $e, Request $request, $code)
     {
         if ($this->app['debug']) {
-            return;
+            echo "\n" . '<br>' . $code . ' - code<br>' . "\n";
+			echo "\n" . '<br>' . $e->getMessage() . ' - e->getMessage()<br>' . "\n";
+			
+			d ( $e );
+			return false;
         }
+
+		if ($e) {}
+		if ($request) {}
 
         switch ($code) {
             case 404:

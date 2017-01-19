@@ -6,8 +6,8 @@
     <h1>{{ 'Doctrine'|trans }}</h1>
 
     <ul>
-        {% for post in posts %}
-            <li>{{ post.title }}</li>
+        {% for asset in assets %}
+            <li>{{ asset.aID }}. {{ asset }}</li>
         {% endfor %}
     </ul>
 
