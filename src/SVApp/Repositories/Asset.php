@@ -2,9 +2,8 @@
 
 namespace SVApp\Repositories;
 
-use SVApp\Application;
+use Silex\Application;
 use SVApp\Classes\Repository;
-use App;
 
 
 class Asset extends Repository {

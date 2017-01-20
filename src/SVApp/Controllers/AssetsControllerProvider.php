@@ -47,7 +47,7 @@ class AssetsControllerProvider implements ControllerProviderInterface
 		 */
 
 		$portfolios = (new \SVApp\Repositories\Portfolio($this->app))->getAllPortfolios();
-
+		
 		$response = $this->app['twig']->render('portfolio.html.twig', array(
 			'allPortfolios' => $portfolios,
 		));
@@ -87,7 +87,9 @@ class AssetsControllerProvider implements ControllerProviderInterface
 
 	public function showAsset($id)
 	{
-		return 'Show ' . $id;
+		$asset = (new \SVApp\Repositories\Asset($this->app))->findEntityByID($id);
+		?><pre><?= print_r( $asset->getArray() ) ?></pre><?
+		return true;
 	}
 
 

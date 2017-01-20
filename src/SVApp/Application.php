@@ -21,6 +21,7 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
 use Sorien\Provider\PimpleDumpProvider;
+use SVApp\Controllers\JSONControllerProvider;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -157,13 +158,14 @@ class Application extends SilexApplication
 
         $app->register(new TwigServiceProvider(), array(
             'twig.options' => array(
-                'cache' =>  $app['var_dir'].'/cache/twig',
+                'cache' => $app['debug'] ? false : $app['var_dir'].'/cache/twig',
 				'auto_reload' => true,
                 'strict_variables' => true,
             ),
             'twig.form.templates' => array('bootstrap_3_horizontal_layout.html.twig'),
             'twig.path' => array($this->rootDir.'/resources/templates', $this->rootDir.'/src/SVApp/Views'),
         ));
+
         $app['twig'] = $app->extend('twig', function ($twig, $app) {
             $twig->addFunction(new \Twig_SimpleFunction('asset', function ($asset) use ($app) {
                 $base = $app['request_stack']->getCurrentRequest()->getBasePath();
@@ -183,6 +185,7 @@ class Application extends SilexApplication
 
         $app->mount('', new ControllerProvider());
 		$app->mount('/assets/', new AssetsControllerProvider());
+		$app->mount('/json/', new JSONControllerProvider());
     }
 
     public function getRootDir()

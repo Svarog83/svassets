@@ -9,7 +9,7 @@
 			<li>{{ portfolio.Name }}</li>
 			<ul>
 				{% for asset in portfolio.Assets %}
-					<li>{{ asset.aID }}. {{ asset.Ticker.Code }}</li>
+					<li><a href="show/{{ asset.aID }}">{{ asset.aID }}. {{ asset.Ticker.Code }} ({{ asset.Sector }}, {{ asset.Strategy }})</a></li>
 				{% endfor %}
 			</ul>
 

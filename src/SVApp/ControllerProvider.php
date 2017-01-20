@@ -47,6 +47,10 @@ class ControllerProvider implements ControllerProviderInterface
 			->get('/test', [$this, 'test'])
 			->bind('test');
 
+		$controllers
+			->get('/angular', [$this, 'angular'])
+			->bind('angular');
+
 		$controllers->get('/mc_flush', function () use ($app) {
 			if ($app['cache']) {
 				return 'Cache flushed. '.$app['cache']->flushCurrent().' item(s) deleted.';
@@ -72,6 +76,11 @@ class ControllerProvider implements ControllerProviderInterface
 
         return $app['twig']->render('index.html.twig');
     }
+
+	public function angular(App $app)
+	{
+		return $app['twig']->render('angular.html.twig');
+	}
 
     public function login(App $app)
     {
