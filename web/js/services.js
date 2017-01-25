@@ -1,66 +1,111 @@
-var myAngularModule = angular.module("MessageService", ['ngResource']);
+var $jq = jQuery.noConflict();
 
-myAngularModule.controller("MessageController", ['$scope', '$http', function ($scope, $http) {
-	$scope.author = "Rajnish";
-	$scope.message = "Delhi";
+var myAngularModule = angular.module("TickerService", ['ngResource']);
+
+myAngularModule.controller("TickerController", ['$scope', '$http', function ($scope, $http) {
+	$scope.Code = "SVTK";
+	$scope.Description = "SV Ticker";
+	$scope.Index = undefined;
 	$scope.num = 4;
+
+	$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
 	var currentResource;
 	var resetForm = function () {
 		$scope.addMode = true;
-		$scope.author = undefined;
-		$scope.message = undefined;
+		$scope.Code = undefined;
+		$scope.Description = undefined;
 		$scope.selectedIndex = undefined;
+		$scope.Index = undefined;
 	};
 
-	$scope.messages = [];
+	$scope.tickers = [];
 	$scope.addMode = true;
 
 	$scope.add = function () {
-		var key = {};
-		var value = {author: $scope.author, message: $scope.message};
+		var value = {id:null, code: $scope.Code, description: $scope.Description};
 
-		console.log(value, '***********value***********');
+		var addCallBackFunc = function(data) {
+			console.log(data, '***********data***********');
+			if (data['result'] == 'ok') {
+				currentResource = {};
+				currentResource.Code = $scope.Code;
+				currentResource.Description = $scope.Description;
+				$scope.tickers.push(currentResource);
 
-		Message.save(key, value, function (data) {
-			$scope.messages.push(data);
-			resetForm();
+				resetForm();
+			}
+			else {
+				alert(data['result']);
+			}
+		};
+
+		$scope.saveTicker(value, addCallBackFunc);
+	};
+
+	$scope.saveTicker = function(value, callBackFunc) {
+
+		$http.post('assets/save_ticker', $jq.param(value)).then(function(response) {
+			var responseData = response.data;
+			if (typeof callBackFunc === 'function') {
+				callBackFunc(responseData);
+			}
 		});
+
+		return true;
+
 	};
 
 	$scope.update = function () {
-		var key = {id: currentResource.id};
-		var value = {author: $scope.author, message: $scope.message};
-		Message.save(key, value, function (data) {
-			currentResource.author = data.author;
-			currentResource.message = data.message;
-			resetForm();
-		});
+		var value = {id: $scope.Code, code: $scope.Code, description: $scope.Description};
+		var index = $scope.Index;
+
+		var updateCallBackFunc = function(data) {
+			if (data['result'] == 'ok') {
+				currentResource = $scope.tickers[index];
+				currentResource.Code = $scope.Code;
+				currentResource.Description = $scope.Description;
+
+				resetForm();
+			}
+			else {
+				alert (data['result']);
+			}
+		};
+
+		$scope.saveTicker(value, updateCallBackFunc);
 	};
 
 	$scope.refresh = function () {
-		console.log('sssss**********************');
 		$http.get('json/assets').then(function(response) {
-			console.log(response.data, '***********response.data***********');
-			$scope.messages = response.data;
+			$scope.tickers = response.data;
 			resetForm();
 		});
 	};
 
-	$scope.deleteMessage = function (index, id) {
-		console.log(index, '***********index***********');
-		console.log(id, '***********id***********');
-		/*Message.delete({id: id}, function () {
-			$scope.messages.splice(index, 1);
+	$scope.deleteTicker = function (index, id) {
+		var value = {id: id};
+
+		$http.post('assets/delete_ticker', $jq.param(value)).then(function(response) {
+			var data = response.data;
+			console.log(response.data, '***********response***********');
+
+			if (data['result'] == 'ok') {
+				$scope.tickers.splice(index, 1);
+			}
+			else {
+				alert (data['result']);
+			}
 			resetForm();
-		});*/
+		});
 	};
 
-	$scope.selectMessage = function (index) {
-		currentResource = $scope.messages[index];
+	$scope.selectTicker = function (index) {
+		currentResource = $scope.tickers[index];
 		$scope.addMode = false;
-		$scope.author = currentResource.author;
-		$scope.message = currentResource.message;
+		$scope.Code = currentResource.Code;
+		$scope.Description = currentResource.Description;
+		$scope.Index = index;
 	};
 
 	$scope.cancel = function () {

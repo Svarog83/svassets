@@ -741,8 +741,8 @@
     },
     {
         "name": "user",
-        "type": "class",
-        "value": "Symfony\\Component\\Security\\Core\\User\\User"
+        "type": "null",
+        "value": ""
     },
     {
         "name": "security.authentication_manager",
@@ -1338,5 +1338,15 @@
         "name": "twig.form.renderer",
         "type": "class",
         "value": "Symfony\\Bridge\\Twig\\Form\\TwigRenderer"
+    },
+    {
+        "name": "dbs.options",
+        "type": "array",
+        "value": ""
+    },
+    {
+        "name": "dbs.default",
+        "type": "string",
+        "value": "default"
     }
 ]

@@ -1,5 +1,6 @@
 <?php
 namespace SVApp\Entities;
+use SVApp\Classes\Entity;
 
 /**
  * SVApp\Entities\Ticker
@@ -7,7 +8,7 @@ namespace SVApp\Entities;
  * @Entity
  * @Table(name="tickers")
  */
-class Ticker {
+class Ticker extends Entity {
 	/**
 	 * @Id
 	 * @Column(type="string", name="code", length=25)
@@ -16,6 +17,10 @@ class Ticker {
 
 	/** @Column(type="string", name="description", length=255) */
 	protected $Description;
+
+	public function getID() {
+		return $this->getCode();
+	}
 
 	/**
 	 * @return string

@@ -1,29 +1,20 @@
 <!DOCTYPE html>
-<html ng-app="MessageService">
+<html ng-app="TickerService">
 <head>
 	<title>Angular Resource Example</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="/web/js/services.js"></script>
 	<script src="/web/js/controllers.js"></script>
 </head>
-<body ng-controller="MessageController">
+<body ng-controller="TickerController">
 
 <h2>Tickets list <a href="#" ng-click="refresh()">refresh</a></h2>
-<ul>
-	<li ng-repeat="message in messages">
-		{% verbatim %}
-		    {{ message.id }}. {{message.author}}
-		{% endverbatim %}
-		<a href="#" ng-click="deleteMessage($index, message.id)">delete</a>
-
-		<a href="#" ng-click="selectMessage($index)">edit</a>
-	</li>
-</ul>
 
 <form>
-	<input type="text" ng-model="author" placeholder="author">
-	<input type="text" ng-model="message" placeholder="message">
+	<input type="text" ng-model="Code" placeholder="code">
+	<input type="text" ng-model="Description" placeholder="description">
 
 	<button ng-click="add()" ng-show='addMode'>Create</button>
 	<button ng-click="update()" ng-hide='addMode'>Update</button>
@@ -34,6 +25,16 @@
 Two times  <input type="text" ng-model="num"> equals {{ double(num) }}
 {% endverbatim %}
 
+<ul>
+	<li ng-repeat="ticker in tickers">
+		{% verbatim %}
+		    {{ ticker.Code }}: {{ticker.Description}}
+		{% endverbatim %}
+		<a href="#" ng-click="deleteTicker($index, ticker.Code)">delete</a>
+
+		<a href="#" ng-click="selectTicker($index)">edit</a>
+	</li>
+</ul>
 
 </body>
 </html>

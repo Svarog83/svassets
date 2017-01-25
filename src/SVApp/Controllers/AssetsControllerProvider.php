@@ -6,7 +6,10 @@ use SVApp\Entities\Asset;
 use SVApp\Entities\Portfolio;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application as App;
+use SVApp\Repositories\Ticker;
 use Symfony\Component\Form\Extension\Core\Type;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AssetsControllerProvider implements ControllerProviderInterface
@@ -32,12 +35,101 @@ class AssetsControllerProvider implements ControllerProviderInterface
 			return $this->showAsset($id);
 		});
 
+		$controllers->post('/save_ticker', function (Request $request) use ( $app ) {
+
+			return $this->saveTicker($request);
+		});
+
+		$controllers->post('/delete_ticker', function (Request $request) use ( $app ) {
+
+			return $this->deleteTicker($request);
+		});
+
 		$controllers->get('/portfolio', function () use ( $app ) {
 
 			return $this->showPortfolio();
 		})->bind('portfolio');
 
 		return $controllers;
+	}
+
+	/**
+	 * @param Request $request
+	 * @return bool
+	 */
+	public function deleteTicker($request) {
+		$resultStatus = 'ok';
+
+		$params = $request->request->all();
+		$tickerRepository = new Ticker($this->app);
+		$tickerEnt = $tickerRepository->findEntityByID($params['id']);
+
+		if ($tickerEnt) {
+			$em = $this->app['orm.em'];
+			$em->getConnection()->beginTransaction();
+			try {
+				$em->remove($tickerEnt);
+				$em->flush($tickerEnt);
+				$em->getConnection()->commit();
+
+			} catch (\Exception $e) {
+				$em->getConnection()->rollBack();
+				$em->close();
+
+				$resultStatus = 'Some error. '.$e->getMessage();
+			}
+		}
+		else {
+			$resultStatus = 'Ticker not found';
+		}
+
+		return new JsonResponse(['result'=>$resultStatus]);
+	}
+
+	/**
+	 * @param Request $request
+	 * @return bool
+	 */
+	public function saveTicker($request) {
+		$resultStatus = 'ok';
+
+		$params = $request->request->all();
+		$tickerRepository = new Ticker($this->app);
+		if ($params['id']) {
+			$em = $this->app['orm.em'];
+			$rep = $em->getRepository($tickerRepository->entName);
+			$criteria = ['Code'=> $params['id']];
+			$tickerEnt = $rep->findOneBy($criteria);
+		}
+		else {
+			$tickerEnt = $tickerRepository->setEntityNew()->getEntity();
+		}
+
+		/**
+		 * @var \SVApp\Entities\Ticker $tickerEnt
+		 */
+
+		if ($tickerEnt) {
+			$em = $this->app['orm.em'];
+			$em->getConnection()->beginTransaction();
+			try {
+				$tickerEnt->setCode($params['code']);
+				$tickerEnt->setDescription($params['description']);
+				$tickerRepository->persistAndFlush($tickerEnt);
+				$em->getConnection()->commit();
+
+			} catch (\Exception $e) {
+				$em->getConnection()->rollBack();
+				$em->close();
+
+				$resultStatus = 'Some error. '.$e->getMessage();
+			}
+		}
+		else {
+			$resultStatus = 'Ticker not found';
+		}
+
+		return new JsonResponse(['result'=>$resultStatus]);
 	}
 
 	public function showPortfolio()

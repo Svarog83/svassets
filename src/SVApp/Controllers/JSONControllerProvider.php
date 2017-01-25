@@ -4,6 +4,7 @@ namespace SVApp\Controllers;
 
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application as App;
+use SVApp\Repositories\Ticker;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,8 +30,20 @@ class JSONControllerProvider implements ControllerProviderInterface {
 	}
 
 	public function getAllAssets() {
-		return new JsonResponse([ [ 'id' => 1, 'author' => 'test1', 'message' => 'message1' ],
-								  [ 'id' => 2, 'author' => 'test2', 'message' => 'message2' ] ]);
+
+		$tickerRepository = new Ticker($this->app);
+
+		/**
+		 * @var \SVApp\Entities\Ticker[] $tickersEntities
+		 */
+		$tickersEntities = $tickerRepository->getList();
+
+		$tickersArr = [];
+		foreach ($tickersEntities AS $tickersEnt) {
+			$tickersArr[] = $tickersEnt->getArray();
+		}
+
+		return new JsonResponse($tickersArr);
 	}
 
 }

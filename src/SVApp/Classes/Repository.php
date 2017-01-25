@@ -202,6 +202,13 @@ abstract class Repository {
 		return $this;
 	}
 
+	public function persistAndFlush (Entity $instanceToSave) {
+		$this->persist($instanceToSave);
+		$this->getEM()->flush($instanceToSave);
+
+		return $this;
+	}
+
 	public function saveToDB(Entity $instanceToSave) {
 		$this->persist($instanceToSave);
 		return $this;

@@ -29,4 +29,13 @@ class Portfolio extends Repository {
 
 		return $query->getArrayResult();
 	}
+
+	/**
+	 * @param $id
+	 * @param $cacheAllowed
+	 * @return \SVApp\Entities\Portfolio
+	 */
+	public function findEntityByID($id, $cacheAllowed = TRUE) {
+		return parent::findEntityByID($id,$cacheAllowed);
+	}
 }
