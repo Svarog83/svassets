@@ -27,13 +27,16 @@ $neededColumns = [1 => 'Ticker', 4 => 'Date', 5 => 'Year', 6 => 'Period', 7 => '
 $resultsCounter = 0;
 foreach ((array)$matches[0] AS $oneRow) {
 	$str = trim($oneRow);
+	if (strpos($str, 'н/расп') !== false && strpos($str, 'н/расп</td>') === false) {
+		$str = str_replace('н/расп', 'не расп</td>', $str);
+	}
 	$result = preg_match_all(
 		/** @lang text */
 		"/<td[^>]*>(\n?\r?.*?)<\/td>/s", $str, $tdMatches);
 	$counter = 0;
 	if ($debugInfo && $withDetails) {
 		$s = !\Kint::dump(microtime(), 'got TDs');
-		//\Kint::dump($tdMatches);
+		\Kint::dump($tdMatches);
 	}
 	foreach ((array)$tdMatches[1] AS $oneColumn) {
 		if (array_key_exists($counter, $neededColumns)) {
