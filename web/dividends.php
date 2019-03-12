@@ -30,6 +30,9 @@ foreach ((array)$matches[0] AS $oneRow) {
 	if (strpos($str, 'н/расп') !== false && strpos($str, 'н/расп</td>') === false) {
 		$str = str_replace('н/расп', 'не расп</td>', $str);
 	}
+	if (strpos($str, 'год') !== false && strpos($str, 'год</td>') === false) {
+		$str = str_replace('год', 'год</td>', $str);
+	}
 	$result = preg_match_all(
 		/** @lang text */
 		"/<td[^>]*>(\n?\r?.*?)<\/td>/s", $str, $tdMatches);
