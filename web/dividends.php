@@ -14,7 +14,7 @@ if ($debugInfo) {
 }
 $result = preg_match_all(
 	/** @lang text */
-	"/<tr class=\"dividend_approved\"[^>]*>(\n?\r?.*?)<\/tr>/s", $htmlContent, $matches);
+	"/<tr [class=\"dividend_approved\"]?[^>]*>(\n?\r?.*?)<\/tr>/s", $htmlContent, $matches);
 if ($debugInfo) {
 	$s = !\Kint::dump(microtime(), 'got rows');
 	\Kint::dump($matches);
@@ -58,6 +58,9 @@ foreach ((array)$matches[0] AS $oneRow) {
 			}
 			if ($debugInfo && $withDetails) {
 				\Kint::dump($columnText);
+			}
+			if ($columnName === 'Amount') {
+				$columnText = preg_replace('/[^0-9\.]/', '', $columnText);
 			}
 			$resultsArr[$resultsCounter][$columnName] = $columnText;
 		}
