@@ -14,7 +14,7 @@ class Asset extends Repository {
 	/**
 	 * @param $id
 	 * @param $cacheAllowed
-	 * @return \SVApp\Entities\Asset
+	 * @return \SVApp\Entities\Asset|\SVApp\Classes\Entity
 	 */
 	public function findEntityByID($id, $cacheAllowed = TRUE) {
 		return parent::findEntityByID($id,$cacheAllowed);

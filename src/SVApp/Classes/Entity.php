@@ -3,7 +3,7 @@ namespace SVApp\Classes;
 
 abstract class Entity {
 	/* @var $application \Silex\Application*/
-	static public $application = NULL;
+	static public $application;
 
 	/**
 	 * Returns item ID
@@ -22,7 +22,7 @@ abstract class Entity {
 
 		$arr = array();
 		foreach ($arr_props as $k => $v) {
-			if ($k == 'skipORMEvents' || $k == '__initializer__' || $k == '__cloner__' || $k == '__isInitialized__') continue;
+			if ($k === 'skipORMEvents' || $k === '__initializer__' || $k === '__cloner__' || $k === '__isInitialized__') continue;
 
 			if (is_scalar($v) || $v === NULL) {
 				$arr[$k] = $v;

@@ -23,7 +23,7 @@ class RedisCache extends \Doctrine\Common\Cache\RedisCache {
 	 * @return int
 	 */
 	public function flushCurrent($pattern = '') {
-		$fullPattern = "*" . $pattern;
+		$fullPattern = '*' . $pattern;
 
 		$c=0;
 		$cr = $this->getRedis()->keys($fullPattern);

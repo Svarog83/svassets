@@ -55,7 +55,7 @@ class AssetsControllerProvider implements ControllerProviderInterface
 
 	/**
 	 * @param Request $request
-	 * @return bool
+	 * @return JsonResponse
 	 */
 	public function deleteTicker($request) {
 		$resultStatus = 'ok';
