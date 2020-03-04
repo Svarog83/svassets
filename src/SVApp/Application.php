@@ -21,7 +21,9 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
 use Sorien\Provider\PimpleDumpProvider;
+use SVApp\Controllers\ExportVesselControllerProvider;
 use SVApp\Controllers\JSONControllerProvider;
+use SVApp\Controllers\VesselMasterDataControllerProvider;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -79,9 +81,7 @@ class Application extends SilexApplication
 		};
 
 		$app['apcu_cache'] = function () use ($app) {
-			$cacheDriver = new ApcuCache();
-
-			return $cacheDriver;
+			return new ApcuCache();
 		};
 
 		// Override these values in resources/config/prod.php file
@@ -186,6 +186,8 @@ class Application extends SilexApplication
         $app->mount('', new ControllerProvider());
 		$app->mount('/assets/', new AssetsControllerProvider());
 		$app->mount('/json/', new JSONControllerProvider());
+		$app->mount('/vesselmasterdata/', new VesselMasterDataControllerProvider());
+		$app->mount('/exportvessel/', new ExportVesselControllerProvider());
     }
 
     public function getRootDir()
