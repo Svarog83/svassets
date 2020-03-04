@@ -4,26 +4,32 @@ require_once '../vendor/raveren/kint/Kint.class.php';
 
 $debugInfo = (boolean)(int)$_REQUEST['debugInfo'];
 $withDetails = (boolean)(int)$_REQUEST['withDetails'];
+
+$upcoming = array_key_exists('upcoming', $_REQUEST) ? $_REQUEST['upcoming'] : 1;
+$onlyApproved = array_key_exists('is_approved', $_REQUEST) ? $_REQUEST['is_approved'] : 0;
+
 if ($debugInfo) {
-	$s = !\Kint::dump(microtime(), 'started');
+	$s = !Kint::dump(microtime(), 'started');
 }
-$URL = 'https://smart-lab.ru/dividends';
+$URL = "https://smart-lab.ru/dividends?is_approved=$onlyApproved&year=&quarter=&upcoming=$upcoming";
 $htmlContent = file_get_contents($URL);
+$htmlContent = preg_replace('/ +/', ' ', $htmlContent);
 if ($debugInfo) {
-	$s = !\Kint::dump(microtime(), 'got content');
+	Kint::dump($URL);
+	$s = !Kint::dump(microtime(), 'got content');
 }
 $result = preg_match_all(
 	/** @lang text */
 	"/<tr [class=\"dividend_approved\"]?[^>]*>(\n?\r?.*?)<\/tr>/s", $htmlContent, $matches);
 if ($debugInfo) {
-	$s = !\Kint::dump(microtime(), 'got rows');
-	\Kint::dump($matches);
+	$s = !Kint::dump(microtime(), 'got rows');
+	Kint::dump($matches);
 }
 
 $resultsArr = [];
 $rowsStr = '';
 
-$neededColumns = [1 => 'Ticker', 4 => 'Date', 5 => 'Year', 6 => 'Period', 7 => 'Amount'];
+$neededColumns = [1 => 'Ticker', 4 => 'Date', 6 => 'Year', 7 => 'Period', 8 => 'Amount'];
 $resultsCounter = 0;
 foreach ((array)$matches[0] AS $oneRow) {
 	$str = trim($oneRow);
@@ -38,14 +44,14 @@ foreach ((array)$matches[0] AS $oneRow) {
 		"/<td[^>]*>(\n?\r?.*?)<\/td>/s", $str, $tdMatches);
 	$counter = 0;
 	if ($debugInfo && $withDetails) {
-		$s = !\Kint::dump(microtime(), 'got TDs');
-		\Kint::dump($tdMatches);
+		$s = !Kint::dump(microtime(), 'got TDs');
+		Kint::dump($tdMatches);
 	}
 	foreach ((array)$tdMatches[1] AS $oneColumn) {
 		if (array_key_exists($counter, $neededColumns)) {
 			$columnName = $neededColumns[$counter];
 			$columnText = str_replace(',', '.', trim(strip_tags($oneColumn)));
-			if ($counter === 4) {
+			if ($columnName === 'Date') {
 				if (strlen($columnText) < 10) {
 					unset($resultsArr[$resultsCounter]);
 					break;
@@ -57,7 +63,7 @@ foreach ((array)$matches[0] AS $oneRow) {
 				$columnText = $day . '/' . $month .'/' . $year;
 			}
 			if ($debugInfo && $withDetails) {
-				\Kint::dump($columnText);
+				Kint::dump($columnText);
 			}
 			if ($columnName === 'Amount') {
 				$columnText = preg_replace('/[^0-9\.]/', '', $columnText);
@@ -66,11 +72,19 @@ foreach ((array)$matches[0] AS $oneRow) {
 		}
 		$counter++;
 	}
-	$resultsCounter++;
+	
+	//if current array with ticker's dividends does not have all required fields
+	//we just remove such element
+	if (count($resultsArr[$resultsCounter]) < 6) {
+		unset($resultsArr[$resultsCounter]);
+	}
+	else {
+		$resultsCounter++;
+	}
 }
 
 if ($debugInfo) {
-	$s = !\Kint::dump(microtime(), 'finished preparing results array');
+	$s = !Kint::dump(microtime(), 'finished preparing results array');
 }
 
 echo json_encode($resultsArr);
