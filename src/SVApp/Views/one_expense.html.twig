@@ -1,0 +1,49 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'expenses' %}
+
+{% block content %}
+
+
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ 'Expenses for'|trans }} `{{ dateStart }}` - `{{ dateEnd }}` ({{ fileName }})</div>
+		<table class="table table-bordered table-hover table-striped">
+			<thead>
+			<tr class="top">
+				<th>No.</th>
+				<th>Номер карты</th>
+				<th>Дата операции</th>
+				<th>Дата обработки</th>
+				<th>Сумма операции</th>
+				<th>Валюта операции</th>
+				<th class="text-right">Сумма в валюте счета</th>
+				<th>Валюта счета</th>
+				<th>Основание</th>
+				<th>Статус</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for expense in expenses %}
+				<tr class="tr">
+					<td>{{ loop.index }}</td>
+					<td>{{ expense.CardNumber }}</td>
+					<td class="text-nowrap">{{ expense.OperationDate }}</td>
+					<td>{{ expense.ProcessDate }}</td>
+					<td>{{ expense.SumInSourceCur }}</td>
+					<td>{{ expense.Currency }}</td>
+					<td class="text-right">{{ expense.SumInRub }}</td>
+					<td>{{ expense.AccountCurrency }}</td>
+					<td class="text-nowrap">{{ expense.Place }}</td>
+					<td class="text-nowrap">{{ expense.Status }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+
+		</table>
+
+		<br>
+		<br>
+
+		<div class="panel-footer">{{ 'Total sum'|trans }}: <b>{{ totalSumRub }}</b></div>
+	</div>
+
+{% endblock %}
