@@ -188,6 +188,7 @@ class Application extends SilexApplication
 		$app->mount('/json/', new JSONControllerProvider());
 		$app->mount('/vesselmasterdata/', new VesselMasterDataControllerProvider());
 		$app->mount('/exportvessel/', new ExportVesselControllerProvider());
+		$app->mount('/expenses/', new \SVApp\Controllers\ExpensesControllerProvider());
     }
 
     public function getRootDir()

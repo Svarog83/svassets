@@ -1,0 +1,14 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'expenses' %}
+
+{% block content %}
+
+	<h1>{{ 'Expense files'|trans }}</h1>
+
+	<ul>
+		{% for expense in expenses %}
+			<li><a href="/expenses/file/{{ expense.url }}"> {{ expense.name }} - {{ expense.date }}</a></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}
