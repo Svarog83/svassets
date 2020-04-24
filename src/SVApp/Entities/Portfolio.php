@@ -28,7 +28,7 @@ class Portfolio extends Entity{
 	 **/
 	protected $Assets;
 
-	function __construct() {
+	public function __construct() {
 		$this->Assets = new ArrayCollection();
 	}
 
@@ -84,7 +84,7 @@ class Portfolio extends Entity{
 	}
 
 	/**
-	 * @return Asset[]
+	 * @return Asset[]|ArrayCollection
 	 */
 	public function getAssets() {
 		return $this->Assets;
