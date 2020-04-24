@@ -6,12 +6,15 @@ $debugInfo = (boolean)(int)$_REQUEST['debugInfo'];
 $withDetails = (boolean)(int)$_REQUEST['withDetails'];
 
 $upcoming = array_key_exists('upcoming', $_REQUEST) ? $_REQUEST['upcoming'] : 1;
-$onlyApproved = array_key_exists('is_approved', $_REQUEST) ? $_REQUEST['is_approved'] : 0;
+$onlyApproved = array_key_exists('is_approved', $_REQUEST) ? $_REQUEST['is_approved'] : NULL;
 
 if ($debugInfo) {
 	$s = !Kint::dump(microtime(), 'started');
 }
-$URL = "https://smart-lab.ru/dividends?is_approved=$onlyApproved&year=&quarter=&upcoming=$upcoming";
+$URL = "https://smart-lab.ru/dividends?year=&quarter=&upcoming=$upcoming";
+if ($onlyApproved !== NULL) {
+	$URL .= '&is_approved=$onlyApproved';
+}
 $htmlContent = file_get_contents($URL);
 $htmlContent = preg_replace('/ +/', ' ', $htmlContent);
 if ($debugInfo) {
