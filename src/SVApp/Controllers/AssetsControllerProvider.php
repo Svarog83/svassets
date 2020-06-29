@@ -180,9 +180,9 @@ class AssetsControllerProvider implements ControllerProviderInterface
 	public function showAsset($id)
 	{
 		$asset = (new \SVApp\Repositories\Asset($this->app))->findEntityByID($id);
-		?><pre><?= print_r( $asset->getArray() ) ?></pre><?
+
+		dump($asset);
+
 		return true;
 	}
-
-
 }

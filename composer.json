@@ -42,7 +42,6 @@
 		"jrschumacher/symfony-redis-session-handler": "dev-master",
 		"bentools/string-combinations": "dev-master",
 		"raveren/kint": "^1.0",
-      "ext-mysql": "*",
       "ext-redis": "*",
       "ext-simplexml": "*"
     },

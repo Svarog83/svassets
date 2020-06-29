@@ -1,0 +1,66 @@
+{
+  "name"        : "svaroggg/svassets",
+  "type"        : "project",
+  "description" : "My project on Silex",
+  "keywords"    : ["framework"],
+  "homepage"    : "https://github.com/Svarog83/svassets",
+  "license"     : "MIT",
+  "authors"     : [
+    {
+      "name"  : "Sergey Vetko",
+      "email" : "svaroggg@gmail.com"
+    }
+  ],
+  "require": {
+    "php"                   : ">=5.6",
+    "doctrine/dbal"         : "2.5.9",
+    "doctrine/common": "2.7.2",
+    "doctrine/inflector": "1.1.0",
+    "doctrine/cache": "1.6.1",
+    "doctrine/collections": "1.3.0",
+    "doctrine/annotations": "1.3.1",
+    "doctrine/lexer": "1.0.1",
+    "symfony/monolog-bridge": "3.2.2",
+    "monolog/monolog"       : "1.22.0",
+    "silex/silex"           : "2.0.4",
+    "silex/web-profiler"    : "2.0.5",
+    "symfony/config"        : "3.2.2",
+    "symfony/console"       : "3.2.2",
+    "symfony/finder"        : "2.8.16",
+    "symfony/form"          : "3.2.2",
+    "symfony/security"      : "3.2.2",
+    "symfony/translation"   : "3.2.2",
+    "symfony/twig-bridge"   : "3.2.2",
+    "symfony/validator"     : "3.2.2",
+    "symfony/yaml"          : "3.2.2",
+    "twig/twig"             : "1.31.0",
+    "twig/extensions"       : "1.4.1",
+    "twitter/bootstrap"     : "3.3.7",
+    "sorien/silex-pimple-dumper": "2.0.0",
+    "dflydev/doctrine-orm-service-provider": "2.0.1",
+    "predis/service-provider" : "dev-master",
+    "jrschumacher/symfony-redis-session-handler": "dev-master",
+    "bentools/string-combinations": "dev-master",
+    "raveren/kint": "1.0.10",
+    "ext-redis": "*",
+    "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "symfony/browser-kit"   : "3.2.2",
+    "symfony/css-selector"  : "3.2.2",
+    "symfony/dom-crawler"   : "3.2.2"
+  },
+  "scripts": {
+    "post-install-cmd": "SVApp\\Composer\\Script::install",
+    "post-update-cmd": "SVApp\\Composer\\Script::install",
+    "compile": [
+      "cp resources/config/heroku.php resources/config/prod.php",
+      "npm install"
+    ]
+  },
+  "autoload": {
+    "psr-4": {
+      "SVApp\\": "src/SVApp"
+    }
+  }
+}
