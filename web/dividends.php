@@ -32,7 +32,8 @@ if ($debugInfo) {
 $resultsArr = [];
 $rowsStr = '';
 
-$neededColumns = [1 => 'Ticker', 4 => 'Date', 6 => 'Year', 7 => 'Period', 8 => 'Amount'];
+//$neededColumns = [1 => 'Ticker', 4 => 'Date', 6 => 'Year', 7 => 'Period', 8 => 'Amount'];
+$neededColumns = [1 => 'Ticker', 9 => 'Date', 3 => 'Year', 4 => 'Period', 5 => 'Amount'];
 $resultsCounter = 0;
 foreach ((array)$matches[0] AS $oneRow) {
 	$str = trim($oneRow);
@@ -75,7 +76,7 @@ foreach ((array)$matches[0] AS $oneRow) {
 		}
 		$counter++;
 	}
-	
+
 	//if current array with ticker's dividends does not have all required fields
 	//we just remove such element
 	if (count($resultsArr[$resultsCounter]) < 6) {
