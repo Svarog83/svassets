@@ -27,16 +27,27 @@ if ($word) {
 		$db_user_name_main = 'googleUser';
 		$db_password_main  = 'RNCX2ffBwStq';
 
-		$connect_main = mysql_connect($db_host_name_main, $db_user_name_main, $db_password_main);
-		mysql_select_db($db_name_main, $connect_main);
+		$connect_main = mysqli_connect($db_host_name_main, $db_user_name_main, $db_password_main);
+		mysqli_select_db($connect_main, $db_name_main);
 
 		$query = "SET NAMES 'utf8'";
-		$result = mysql_query($query) or die(__FILE__ . __LINE__);
+		$result = mysqli_query($connect_main, $query) or die(__FILE__ . __LINE__);
+
+		$query = 'SELECT COUNT(*) FROM nouns2';
+		$result = mysqli_query($connect_main, $query) or die(__FILE__ . __LINE__);
+		$row = mysqli_fetch_row($result);
+		$tableWasEmpty = false;
+		if (!$row || empty($row[0])) {
+			$tableWasEmpty = true;
+			//if memory table is empty - we need to populate it with data
+			$query = 'INSERT INTO nouns2 SELECT * FROM nouns';
+			$result = mysqli_query($connect_main, $query) or die(__FILE__ . __LINE__);
+		}
 
 		//$combinations = string_combinations('виноград', $min = 2, $max=7);
 		//$combinations = string_combinations('молоко', $min = 2, $max=6);
 
-		$combinations = string_combinations($word, $min = 2, $length - 1);
+		$combinations = string_combinations($word, $min = 2, $length);
 		//dump(count($combinations));
 		$combinations = $combinations->withoutDuplicates();
 		$i            = 0;
@@ -51,10 +62,10 @@ if ($word) {
 				$query = /** @lang SQL */
 					"SELECT word FROM nouns2 WHERE word IN('" . implode("', '", $params) . "')";
 
-				$result = mysql_query($query) or die(__FILE__ . __LINE__);
+				$result = mysqli_query($connect_main, $query) or die(__FILE__ . __LINE__);
 
 
-				while ($row = mysql_fetch_row($result)) {
+				while ($row = mysqli_fetch_row($result)) {
 					$foundWords[] = $row[0];
 				}
 			}
@@ -64,10 +75,10 @@ if ($word) {
 			$query = /** @lang SQL */
 				"SELECT word FROM nouns2 WHERE word IN('" . implode("', '", $params) . "')";
 
-			$result = mysql_query($query) or die(__FILE__ . __LINE__);
+			$result = mysqli_query($connect_main, $query) or die(__FILE__ . __LINE__);
 
 
-			while ($row = mysql_fetch_row($result)) {
+			while ($row = mysqli_fetch_row($result)) {
 				$foundWords[] = $row[0];
 			}
 		}
@@ -78,6 +89,9 @@ if ($word) {
 
 	if (count($foundWords)) {
 		$foundWords = array_unique($foundWords);
+		if ($tableWasEmpty) {
+			echo 'Таблица nouns2 была пустая, пришлось ее заполнить<br>';
+		}
 		echo 'Из букв слова `'.$word.'` найдено слов: <b>'. count($foundWords).'</b><br>';
 		echo implode ('<br>', $foundWords) . '<br>';
 		echo 'Прошло: ' . (time() - $started) .' секунд. <br>';
