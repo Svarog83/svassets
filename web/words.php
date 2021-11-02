@@ -24,8 +24,9 @@ if ($word) {
 	if ($allOK) {
 		$db_host_name_main = 'localhost';
 		$db_name_main      = 'stocks';
-		$db_user_name_main = 'googleUser';
-		$db_password_main  = 'RNCX2ffBwStq';
+		$db_user_name_main = '';
+		$db_password_main  = '';//see the file words_db_settings
+		require_once 'words_db_settings.php';
 
 		$connect_main = mysqli_connect($db_host_name_main, $db_user_name_main, $db_password_main);
 		mysqli_select_db($connect_main, $db_name_main);
