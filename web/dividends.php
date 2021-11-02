@@ -26,14 +26,14 @@ $result = preg_match_all(
 	"/<tr [class=\"dividend_approved\"]?[^>]*>(\n?\r?.*?)<\/tr>/s", $htmlContent, $matches);
 if ($debugInfo) {
 	$s = !Kint::dump(microtime(), 'got rows');
-	Kint::dump($matches);
+	Kint::dump($matches[0]);
 }
 
 $resultsArr = [];
 $rowsStr = '';
 
 //$neededColumns = [1 => 'Ticker', 4 => 'Date', 6 => 'Year', 7 => 'Period', 8 => 'Amount'];
-$neededColumns = [1 => 'Ticker', 9 => 'Date', 3 => 'Year', 4 => 'Period', 5 => 'Amount'];
+$neededColumns = [1 => 'Ticker', 2 => 'Period', 3 => 'Amount',  7 => 'Date'];
 $resultsCounter = 0;
 foreach ((array)$matches[0] AS $oneRow) {
 	$str = trim($oneRow);
@@ -67,7 +67,7 @@ foreach ((array)$matches[0] AS $oneRow) {
 				$columnText = $day . '/' . $month .'/' . $year;
 			}
 			if ($debugInfo && $withDetails) {
-				Kint::dump($columnText);
+				Kint::dump($columnName .' = '.$columnText);
 			}
 			if ($columnName === 'Amount') {
 				$columnText = preg_replace('/[^0-9\.]/', '', $columnText);
@@ -79,7 +79,7 @@ foreach ((array)$matches[0] AS $oneRow) {
 
 	//if current array with ticker's dividends does not have all required fields
 	//we just remove such element
-	if (count($resultsArr[$resultsCounter]) < 6) {
+	if (count($resultsArr[$resultsCounter]) < 5) {
 		unset($resultsArr[$resultsCounter]);
 	}
 	else {
