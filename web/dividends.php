@@ -70,7 +70,13 @@ foreach ((array)$matches[0] AS $oneRow) {
 				Kint::dump($columnName .' = '.$columnText);
 			}
 			if ($columnName === 'Amount') {
-				$columnText = preg_replace('/[^0-9\.]/', '', $columnText);
+				if (strpos($oneColumn, 'class="dividend_canceled"') !== FALSE) {
+					$columnText = '0.00';
+					$resultsArr[$resultsCounter]['Estimate'] = FALSE;
+				}
+				else {
+					$columnText = preg_replace( '/[^0-9\.]/', '', $columnText );
+				}
 			}
 			$resultsArr[$resultsCounter][$columnName] = $columnText;
 		}
